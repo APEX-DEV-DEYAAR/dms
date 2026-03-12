@@ -1,0 +1,302 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Deyaar Brand Fonts */
+@font-face {
+  font-family: 'Acta Pro';
+  src: url('https://fonts.cdnfonts.com/css/acta-display') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --deyaar-orange: #E8754F;
+    --deyaar-orange-light: #F08A6A;
+    --deyaar-orange-dark: #D5633F;
+    --deyaar-brown: #A2593F;
+    --deyaar-brown-light: #B56D52;
+    --deyaar-brown-dark: #8A4A33;
+    --deyaar-beige: #F5EBD5;
+    --deyaar-beige-light: #FAF5E8;
+    --deyaar-beige-dark: #E8DCC0;
+    --deyaar-dark: #2D2420;
+  }
+}
+
+@layer base {
+  body {
+    margin: 0;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #F8F6F3;
+    color: var(--deyaar-dark);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: 600;
+    color: var(--deyaar-dark);
+    letter-spacing: -0.02em;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--deyaar-beige-dark);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--deyaar-orange);
+  }
+}
+
+@layer components {
+  /* Primary Button */
+  .btn-primary {
+    @apply px-5 py-2.5 bg-deyaar-orange text-white font-semibold rounded-xl 
+           hover:bg-deyaar-orange-dark transition-all duration-200 
+           focus:outline-none focus:ring-2 focus:ring-deyaar-orange/50 focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-deyaar-orange/25
+           active:scale-95;
+  }
+
+  /* Secondary Button */
+  .btn-secondary {
+    @apply px-5 py-2.5 bg-white text-deyaar-dark font-semibold rounded-xl 
+           border border-gray-200 hover:border-deyaar-orange/30 hover:bg-deyaar-beige-light
+           transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-deyaar-orange/30
+           active:scale-95;
+  }
+
+  /* Ghost Button */
+  .btn-ghost {
+    @apply px-4 py-2 text-deyaar-brown font-medium rounded-lg
+           hover:bg-deyaar-beige transition-colors duration-200;
+  }
+
+  /* Input Field */
+  .input-field {
+    @apply w-full border border-gray-200 rounded-xl px-4 py-3 text-sm
+           focus:outline-none focus:ring-2 focus:ring-deyaar-orange/20 focus:border-deyaar-orange
+           transition-all duration-200 bg-white placeholder:text-gray-400;
+  }
+
+  /* Select Field */
+  .select-field {
+    @apply w-full border border-gray-200 rounded-xl px-4 py-3 text-sm
+           focus:outline-none focus:ring-2 focus:ring-deyaar-orange/20 focus:border-deyaar-orange
+           transition-all duration-200 bg-white appearance-none cursor-pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23A2593F'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 40px;
+  }
+
+  /* Card Styles */
+  .card {
+    @apply bg-white rounded-2xl border border-gray-100 shadow-sm;
+  }
+
+  .card-hover {
+    @apply hover:shadow-lg hover:border-deyaar-orange/10 transition-all duration-300;
+  }
+
+  /* Stats Card */
+  .stat-card {
+    @apply bg-white rounded-2xl p-6 border border-gray-100 shadow-sm
+           hover:shadow-lg hover:border-deyaar-orange/10 transition-all duration-300;
+  }
+
+  .stat-card-icon {
+    @apply w-12 h-12 rounded-xl flex items-center justify-center mb-4;
+  }
+
+  /* Page Header */
+  .page-header {
+    @apply mb-8;
+  }
+
+  .page-title {
+    @apply text-3xl font-bold text-deyaar-dark tracking-tight;
+  }
+
+  .page-subtitle {
+    @apply text-base text-gray-500 mt-2;
+  }
+
+  /* Section Header */
+  .section-title {
+    @apply text-lg font-semibold text-deyaar-dark flex items-center gap-2;
+  }
+
+  /* Table Styles */
+  .table-container {
+    @apply overflow-hidden rounded-2xl border border-gray-100;
+  }
+
+  .table-header {
+    @apply px-5 py-4 text-left text-xs font-bold text-deyaar-brown uppercase tracking-wider bg-deyaar-beige-light/50;
+  }
+
+  .table-cell {
+    @apply px-5 py-4 text-sm text-gray-700;
+  }
+
+  .table-row {
+    @apply hover:bg-deyaar-beige-light/30 transition-colors border-b border-gray-50 last:border-0;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold;
+  }
+
+  .badge-orange {
+    @apply bg-deyaar-orange/10 text-deyaar-orange;
+  }
+
+  .badge-brown {
+    @apply bg-deyaar-brown/10 text-deyaar-brown;
+  }
+
+  .badge-beige {
+    @apply bg-deyaar-beige text-deyaar-brown;
+  }
+
+  /* Form Group */
+  .form-group {
+    @apply space-y-2;
+  }
+
+  .form-label {
+    @apply block text-sm font-semibold text-deyaar-dark;
+  }
+
+  .form-label-required::after {
+    content: ' *';
+    @apply text-deyaar-orange;
+  }
+
+  /* Step Wizard */
+  .step-item {
+    @apply flex items-center gap-3;
+  }
+
+  .step-number {
+    @apply w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold
+           bg-deyaar-beige text-deyaar-brown border-2 border-deyaar-beige-dark;
+  }
+
+  .step-number-active {
+    @apply bg-deyaar-orange text-white border-deyaar-orange;
+  }
+
+  .step-number-completed {
+    @apply bg-green-500 text-white border-green-500;
+  }
+
+  /* Drop Zone */
+  .drop-zone {
+    @apply border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center
+           transition-all duration-300 cursor-pointer;
+  }
+
+  .drop-zone-hover {
+    @apply border-deyaar-orange bg-deyaar-orange/5;
+  }
+
+  .drop-zone-has-file {
+    @apply border-green-400 bg-green-50;
+  }
+
+  /* Search Input */
+  .search-input {
+    @apply w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl
+           focus:outline-none focus:ring-2 focus:ring-deyaar-orange/20 focus:border-deyaar-orange
+           transition-all duration-200 placeholder:text-gray-400;
+  }
+
+  /* Filter Bar */
+  .filter-bar {
+    @apply flex flex-wrap items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm;
+  }
+
+  /* Empty State */
+  .empty-state {
+    @apply flex flex-col items-center justify-center py-16 text-center;
+  }
+
+  /* Navigation Link */
+  .nav-link {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium
+           transition-all duration-200;
+  }
+
+  .nav-link-active {
+    @apply bg-deyaar-orange text-white shadow-lg shadow-deyaar-orange/25;
+  }
+
+  .nav-link-inactive {
+    @apply text-gray-600 hover:bg-deyaar-beige-light hover:text-deyaar-brown;
+  }
+
+  /* Quick Action Card */
+  .quick-action {
+    @apply flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-100
+           hover:border-deyaar-orange/30 hover:shadow-md transition-all duration-200 cursor-pointer;
+  }
+
+  /* Progress Bar */
+  .progress-bar {
+    @apply h-2 bg-gray-100 rounded-full overflow-hidden;
+  }
+
+  .progress-bar-fill {
+    @apply h-full bg-gradient-to-r from-deyaar-orange to-deyaar-brown rounded-full transition-all duration-500;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-deyaar-orange to-deyaar-brown;
+  }
+
+  .bg-pattern {
+    background-image: 
+      radial-gradient(circle at 0% 0%, rgba(232, 117, 79, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 100% 100%, rgba(162, 89, 63, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(245, 235, 213, 0.5) 0%, transparent 70%);
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.3s ease-out;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "letterhead-control-system",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": ["server", "client"],
+  "scripts": {
+    "dev:server": "npm run dev --workspace=server",
+    "dev:client": "npm run dev --workspace=client",
+    "build": "npm run build --workspace=server && npm run build --workspace=client"
+  },
+  "overrides": {
+    "fast-csv": "^5.0.5",
+    "@fast-csv/format": "^5.0.5",
+    "@fast-csv/parse": "^5.0.5",
+    "archiver": "^7.0.1",
+    "archiver-utils": "^5.0.2",
+    "zip-stream": "^6.0.1",
+    "unzipper": "^0.12.3",
+    "glob": "^13.0.6"
+  }
+}

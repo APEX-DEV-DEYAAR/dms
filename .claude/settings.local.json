@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(find /c/Users/ahmeds/researchwork/testproject/dms -type f \\\\\\( -name \"*.js\" -o -name \"*.ts\" \\\\\\) -path \"*/server/*\" -o -path \"*/backend/*\" -o -path \"*/api/*\" 2>/dev/null | head -30)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3001/api/auth/login -X POST -H \"Content-Type: application/json\" -d '{\"username\":\"admin\",\"password\":\"password123\"}' 2>&1 || echo \"Connection failed\")",
+      "Bash(pg_isready -h localhost -p 5432 2>&1 || echo \"PostgreSQL not reachable\")",
+      "Bash(cd C:/Users/ahmeds/researchwork/testproject/dms && npm run dev:server)",
+      "Bash(psql -U postgres -h localhost -p 5432 -c \"CREATE DATABASE letterhead_control;\" 2>&1)",
+      "Bash(where psql:*)",
+      "Read(//c/Program Files/PostgreSQL/**)",
+      "Read(//c/Program Files \\(x86\\)/**)",
+      "Bash(\"C:/Program Files/PostgreSQL/16/bin/psql.exe\" -U postgres -h localhost -p 5432 -c \"CREATE DATABASE letterhead_control;\" 2>&1)",
+      "Bash(PGPASSWORD=postgres \"C:/Program Files/PostgreSQL/16/bin/psql.exe\" -U postgres -h localhost -p 5432 -c \"CREATE DATABASE letterhead_control;\" 2>&1)",
+      "Bash(cd C:/Users/ahmeds/researchwork/testproject/dms && npm run seed --workspace=server 2>&1)",
+      "Bash(curl -s http://localhost:3001/api/auth/login -X POST -H \"Content-Type: application/json\" -d '{\"username\":\"admin\",\"password\":\"password123\"}' 2>&1)",
+      "Bash(cd C:/Users/ahmeds/researchwork/testproject/dms && node -e \"const bcrypt = require\\('bcrypt'\\); bcrypt.compare\\('password123', '\\\\$2b\\\\$10\\\\$K7L1OJ45/4Y2nIvhRVpCe.FSmhDdWoXehVzJptJ/op0lSsvqNu/1u'\\).then\\(r => console.log\\('match:', r\\)\\)\")",
+      "Bash(cd C:/Users/ahmeds/researchwork/testproject/dms && node -e \"const bcrypt = require\\('bcrypt'\\); bcrypt.hash\\('password123', 10\\).then\\(h => console.log\\(h\\)\\)\")",
+      "Bash(PGPASSWORD=postgres \"C:/Program Files/PostgreSQL/16/bin/psql.exe\" -U postgres -h localhost -p 5432 -d letterhead_control -c \"UPDATE users SET password_hash = '\\\\$2b\\\\$10\\\\$zYR/GwsNz5fVhVlRj2UjI.o/wNDG3dLZndt1/YEk0628gtnCtozRC';\" 2>&1)",
+      "Bash(cd C:/Users/ahmeds/researchwork/testproject/dms && node -e \"\nconst bcrypt = require\\('bcrypt'\\);\nconst { Pool } = require\\('pg'\\);\nconst pool = new Pool\\({ host:'localhost', port:5432, database:'letterhead_control', user:'postgres', password:'postgres' }\\);\n\\(async \\(\\) => {\n  const hash = await bcrypt.hash\\('password123', 10\\);\n  console.log\\('New hash:', hash\\);\n  const res = await pool.query\\('UPDATE users SET password_hash = \\\\$1', [hash]\\);\n  console.log\\('Updated rows:', res.rowCount\\);\n  // verify\n  const user = await pool.query\\('SELECT username, password_hash FROM users WHERE username = \\\\$1', ['admin']\\);\n  const match = await bcrypt.compare\\('password123', user.rows[0].password_hash\\);\n  console.log\\('Verify match:', match\\);\n  await pool.end\\(\\);\n}\\)\\(\\);\n\")",
+      "Bash(taskkill //F //FI \"WINDOWTITLE eq *\" //FI \"IMAGENAME eq node.exe\" 2>/dev/null; sleep 2; npx --yes kill-port 3001 2>/dev/null; sleep 1; echo \"done\")",
+      "Bash(printf '%PDF-1.4 test content' > C:/Users/ahmeds/researchwork/testproject/dms/test.pdf && ls -la C:/Users/ahmeds/researchwork/testproject/dms/test.pdf)",
+      "Bash(echo \"PDF test content\" > \"C:/Users/ahmeds/researchwork/testproject/dms/test.pdf\" && ls -la \"C:/Users/ahmeds/researchwork/testproject/dms/test.pdf\")",
+      "Bash(PGPASSWORD=postgres \"C:/Program Files/PostgreSQL/16/bin/psql.exe\" -U postgres -h localhost -d letterhead_control -c \"SELECT u.username, u.department_id, d.code FROM users u LEFT JOIN departments d ON u.department_id = d.id;\" 2>&1)",
+      "Bash(cd C:/Users/ahmeds/researchwork/testproject/dms && curl -s http://localhost:3001/api/auth/login -X POST -H \"Content-Type: application/json\" -d '{\"username\":\"fin.user\",\"password\":\"password123\"}' | node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>console.log\\(JSON.parse\\(d\\).user\\)\\)\")",
+      "Bash(PGPASSWORD=postgres \"C:/Program Files/PostgreSQL/16/bin/psql.exe\" -U postgres -h localhost -d letterhead_control -c \"\\\\d letterheads\" 2>&1)",
+      "Bash(npm audit:*)",
+      "Bash(npm ls:*)",
+      "Bash(npm view:*)",
+      "Bash(npm pack:*)"
+    ]
+  }
+}
