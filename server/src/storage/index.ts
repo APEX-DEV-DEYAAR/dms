@@ -6,8 +6,6 @@ export function createStorageAdapter(): BaseStorageAdapter {
   switch (config.storage.type) {
     case 'local':
       return new LocalStorageAdapter(config.storage.root);
-    // case 'sharepoint':
-    //   return new SharePointStorageAdapter(config.sharepoint);
     default:
       return new LocalStorageAdapter(config.storage.root);
   }
