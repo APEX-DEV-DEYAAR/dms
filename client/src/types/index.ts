@@ -18,7 +18,13 @@ export interface AuthPayload {
 
 export interface LoginResponse {
   token: string;
+  refreshToken: string;
   user: AuthPayload;
+}
+
+export interface RefreshTokenResponse {
+  token: string;
+  refreshToken: string;
 }
 
 export interface Letterhead {

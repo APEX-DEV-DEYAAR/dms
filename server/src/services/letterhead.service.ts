@@ -34,23 +34,9 @@ export class LetterheadService {
     return trimmed.length > 0 ? trimmed : null;
   }
 
-  private ensureDepartmentAccess(letterhead: LetterheadWithDetails, user: AuthPayload, targetDepartmentId: number) {
-    if (user.role === 'department_user') {
-      const currentDepartmentId = Number(letterhead.department_id);
-      const userDepartmentId = Number(user.departmentId);
-      const requestedDepartmentId = Number(targetDepartmentId);
-
-      if (Number.isNaN(userDepartmentId)) {
-        throw new ForbiddenError('Your account is not linked to a department');
-      }
-
-      if (currentDepartmentId !== userDepartmentId) {
-        throw new ForbiddenError('You can only modify letterheads for your own department');
-      }
-
-      if (requestedDepartmentId !== currentDepartmentId) {
-        throw new ForbiddenError('You can only move letterheads within your own department');
-      }
+  private ensureEditAccess(letterhead: LetterheadWithDetails, user: AuthPayload) {
+    if (Number(letterhead.created_by) !== Number(user.userId)) {
+      throw new ForbiddenError('You can only edit letters you created');
     }
   }
 
@@ -63,7 +49,7 @@ export class LetterheadService {
     file: UploadedPdf,
     user: AuthPayload
   ): Promise<LetterheadWithDetails> {
-    if (user.role === 'department_user' && Number(user.departmentId) !== departmentId) {
+    if (user.role === 'department_user' && Number(user.departmentId) !== Number(departmentId)) {
       throw new ForbiddenError('You can only register letterheads for your own department');
     }
 
@@ -121,7 +107,7 @@ export class LetterheadService {
     const letterhead = await this.letterheadRepo.findById(id);
     if (!letterhead) throw new NotFoundError('Letterhead not found');
 
-    if (user.role === 'department_user' && letterhead.department_id !== user.departmentId) {
+    if (user.role === 'department_user' && Number(letterhead.department_id) !== Number(user.departmentId)) {
       throw new ForbiddenError('Access denied');
     }
 
@@ -153,7 +139,6 @@ export class LetterheadService {
   async update(id: number, input: UpdateLetterheadInput, file: UploadedPdf | undefined, user: AuthPayload): Promise<LetterheadWithDetails> {
     const existing = await this.letterheadRepo.findById(id);
     if (!existing) throw new NotFoundError('Letterhead not found');
-    if (existing.is_archived) throw new ForbiddenError('Cannot edit archived letters');
 
     const justification = input.justification.trim();
     if (!justification) throw new ValidationError('Modification justification is required');
@@ -164,7 +149,7 @@ export class LetterheadService {
     const approvalAuthority = input.approvalAuthority.trim();
     if (!approvalAuthority) throw new ValidationError('Approval authority is required');
 
-    this.ensureDepartmentAccess(existing, user, input.departmentId);
+    this.ensureEditAccess(existing, user);
 
     const department = await this.deptRepo.findById(input.departmentId);
     if (!department) throw new NotFoundError('Department not found');
@@ -245,85 +230,4 @@ export class LetterheadService {
     return this.formatReference(prefix, sequence);
   }
 
-  async archive(
-    id: number,
-    archiveReference: string,
-    retentionYears: number,
-    user: AuthPayload
-  ): Promise<{ letterhead: LetterheadWithDetails; archiveInfo: any }> {
-    const current = await this.letterheadRepo.findById(id);
-    if (!current) throw new NotFoundError('Letterhead not found');
-    if (current.is_archived) throw new ValidationError('Letterhead is already archived');
-    if (user.role === 'department_user') throw new ForbiddenError('Only administrators can archive letters');
-
-    const retentionUntil = new Date();
-    retentionUntil.setFullYear(retentionUntil.getFullYear() + retentionYears);
-    const finalArchiveRef = archiveReference || `ARC-${current.reference_number}-${Date.now()}`;
-
-    const archiveInfo = await this.letterheadRepo.createArchive({
-      letterhead_id: id,
-      archive_reference: finalArchiveRef,
-      storage_location: current.file_path,
-      archived_by: user.userId,
-      retention_until: retentionUntil,
-      metadata: {
-        original_reference: current.reference_number,
-        department_code: current.department_code,
-        archived_at: new Date().toISOString(),
-      },
-    });
-
-    await this.letterheadRepo.update(
-      id,
-      {
-        is_archived: 1,
-        archived_at: new Date(),
-        archived_by: user.userId,
-        archive_reference: finalArchiveRef,
-        updated_by: user.userId,
-      },
-      user.userId,
-      'Archived letter',
-      `Archive reference: ${finalArchiveRef}`
-    );
-
-    await this.auditRepo.log('letterhead', id, 'archive', user.userId, `Archived letterhead ${current.reference_number} with reference ${finalArchiveRef}`);
-    return { letterhead: (await this.letterheadRepo.findById(id))!, archiveInfo };
-  }
-
-  async unarchive(id: number, user: AuthPayload): Promise<LetterheadWithDetails> {
-    const current = await this.letterheadRepo.findById(id);
-    if (!current) throw new NotFoundError('Letterhead not found');
-    if (!current.is_archived) throw new ValidationError('Letterhead is not archived');
-    if (user.role === 'department_user') throw new ForbiddenError('Only administrators can unarchive letters');
-
-    await this.letterheadRepo.update(
-      id,
-      {
-        is_archived: 0,
-        archived_at: null,
-        archived_by: null,
-        archive_reference: null,
-        updated_by: user.userId,
-      },
-      user.userId,
-      'Unarchived letter',
-      'Letter restored to active records'
-    );
-
-    await this.auditRepo.log('letterhead', id, 'unarchive', user.userId, `Unarchived letterhead ${current.reference_number}`);
-    return (await this.letterheadRepo.findById(id))!;
-  }
-
-  async getArchiveInfo(id: number, user: AuthPayload): Promise<any> {
-    const current = await this.letterheadRepo.findById(id);
-    if (!current) throw new NotFoundError('Letterhead not found');
-
-    if (user.role === 'department_user' && current.department_id !== user.departmentId) {
-      throw new ForbiddenError('Access denied');
-    }
-
-    if (!current.is_archived) return null;
-    return this.letterheadRepo.findArchiveByLetterheadId(id);
-  }
 }

@@ -7,6 +7,10 @@ export class PostgresAdapter extends BaseDBAdapter {
   private pool: Pool;
   private client?: PoolClient;
 
+  get dialect(): 'postgres' {
+    return 'postgres';
+  }
+
   constructor(config: { host: string; port: number; database: string; user: string; password: string }, client?: PoolClient) {
     super();
     this.pool = new Pool(config);
@@ -63,6 +67,10 @@ export class PostgresAdapter extends BaseDBAdapter {
   }
 
   async runMigrations(migrationsDir: string): Promise<void> {
+    // Support dialect-specific subdirectory: check for postgres/ subfolder first
+    const dialectDir = path.join(migrationsDir, 'postgres');
+    const effectiveDir = fs.existsSync(dialectDir) ? dialectDir : migrationsDir;
+
     await this.execute(`
       CREATE TABLE IF NOT EXISTS schema_migrations (
         id BIGSERIAL PRIMARY KEY,
@@ -71,7 +79,7 @@ export class PostgresAdapter extends BaseDBAdapter {
       )
     `);
 
-    const files = fs.readdirSync(migrationsDir)
+    const files = fs.readdirSync(effectiveDir)
       .filter(f => f.endsWith('.sql'))
       .sort();
 
@@ -81,7 +89,7 @@ export class PostgresAdapter extends BaseDBAdapter {
         [file]
       );
       if (!existing) {
-        const sql = fs.readFileSync(path.join(migrationsDir, file), 'utf-8');
+        const sql = fs.readFileSync(path.join(effectiveDir, file), 'utf-8');
         await this.execute(sql);
         await this.execute(
           'INSERT INTO schema_migrations (filename) VALUES ($1)',

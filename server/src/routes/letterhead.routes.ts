@@ -3,6 +3,8 @@ import { LetterheadController } from '../controllers/letterhead.controller';
 import { authMiddleware } from '../middleware/auth';
 import { authorize } from '../middleware/authorize';
 import { uploadMiddleware } from '../middleware/upload';
+import { validate } from '../validation';
+import { createLetterheadSchema, letterheadFilterSchema, updateLetterheadSchema } from '../validation/schemas';
 
 export function letterheadRoutes(controller: LetterheadController): Router {
   const router = Router();
@@ -10,35 +12,25 @@ export function letterheadRoutes(controller: LetterheadController): Router {
   router.use(authMiddleware);
 
   router.get('/next-reference', controller.getNextReference);
-  router.get('/export', controller.export);
-  router.get('/', controller.getList);
-  router.get('/:id/archive', controller.getArchiveInfo);
+  router.get('/export', validate(letterheadFilterSchema), controller.export);
+  router.get('/', validate(letterheadFilterSchema), controller.getList);
   router.get('/:id', controller.getById);
   router.get('/:id/download', controller.download);
   router.get('/:id/versions', controller.getVersionHistory);
-  
-  // Update (edit description and notes)
+
+  // Update — only the creator can edit their own letter (enforced in service)
   router.put('/:id',
     authorize('department_user', 'compliance', 'ceo_office', 'admin'),
     uploadMiddleware.single('file'),
+    validate(updateLetterheadSchema),
     controller.update
   );
-  
-  // Archive (admin only)
-  router.post('/:id/archive',
-    authorize('compliance', 'ceo_office', 'admin'),
-    controller.archive
-  );
-  
-  // Unarchive (admin only)
-  router.post('/:id/unarchive',
-    authorize('compliance', 'ceo_office', 'admin'),
-    controller.unarchive
-  );
-  
+
+  // Create — all authenticated users can register letters
   router.post('/',
     authorize('department_user', 'admin'),
     uploadMiddleware.single('file'),
+    validate(createLetterheadSchema),
     controller.create
   );
 

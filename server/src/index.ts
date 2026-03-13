@@ -2,6 +2,7 @@ import path from 'path';
 import { config } from './config';
 import { createDBAdapter } from './db';
 import { createStorageAdapter } from './storage';
+import { createSqlHelper } from './shared/sql-helpers';
 import { createApp } from './app';
 
 // Repositories
@@ -26,6 +27,7 @@ import { DashboardController } from './controllers/dashboard.controller';
 async function main() {
   const db = createDBAdapter();
   const storage = createStorageAdapter();
+  const sql = createSqlHelper(db.dialect);
 
   // Connect and run migrations
   await db.connect();
@@ -34,10 +36,10 @@ async function main() {
   console.log('Migrations complete');
 
   // Wire up repositories
-  const deptRepo = new DepartmentRepository(db);
-  const userRepo = new UserRepository(db);
-  const letterheadRepo = new LetterheadRepository(db);
-  const auditRepo = new AuditRepository(db);
+  const deptRepo = new DepartmentRepository(db, sql);
+  const userRepo = new UserRepository(db, sql);
+  const letterheadRepo = new LetterheadRepository(db, sql);
+  const auditRepo = new AuditRepository(db, sql);
 
   // Wire up services
   const authService = new AuthService(userRepo);

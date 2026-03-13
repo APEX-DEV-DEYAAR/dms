@@ -1,5 +1,5 @@
 import { api } from './client';
-import { Letterhead, PaginatedResult, ArchiveInfo, VersionInfo, UpdateLetterheadPayload } from '../types';
+import { Letterhead, PaginatedResult, VersionInfo, UpdateLetterheadPayload } from '../types';
 
 export interface LetterheadFilter {
   departmentId?: number;
@@ -48,16 +48,6 @@ export const letterheadApi = {
 
   getNextReference: (departmentId: number) =>
     api.get<{ nextReference: string }>(`/letterheads/next-reference?departmentId=${departmentId}`),
-
-  // Archive operations
-  archive: (id: number, data: { archiveReference?: string; retentionYears?: number }) =>
-    api.post<{ letterhead: Letterhead; archiveInfo: ArchiveInfo }>(`/letterheads/${id}/archive`, data),
-
-  unarchive: (id: number) =>
-    api.post<Letterhead>(`/letterheads/${id}/unarchive`, {}),
-
-  getArchiveInfo: (id: number) =>
-    api.get<ArchiveInfo | null>(`/letterheads/${id}/archive`),
 
   getVersions: (id: number) =>
     api.get<VersionInfo[]>(`/letterheads/${id}/versions`),

@@ -5,15 +5,33 @@ import rateLimit from 'express-rate-limit';
 import { config } from './config';
 import { createRouter, Controllers } from './routes';
 import { errorHandler } from './middleware/errorHandler';
+import { requestIdMiddleware } from './middleware/requestId';
 
 export function createApp(controllers: Controllers): express.Application {
   const app = express();
   app.disable('x-powered-by');
 
+  // Request ID — first middleware so every response gets it
+  app.use(requestIdMiddleware);
+
   // Security headers
   app.use(helmet({
     crossOriginResourcePolicy: { policy: 'same-site' },
     referrerPolicy: { policy: 'no-referrer' },
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:'],
+        connectSrc: ["'self'"],
+        fontSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        frameSrc: ["'none'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
+      },
+    },
   }));
 
   // CORS - restrict to known origins

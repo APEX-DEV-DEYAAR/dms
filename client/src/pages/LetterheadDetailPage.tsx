@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArchiveInfo, Department, Letterhead, LetterheadVersion, UpdateLetterheadPayload } from '../types';
+import { Department, Letterhead, LetterheadVersion, UpdateLetterheadPayload } from '../types';
 import { letterheadApi } from '../services/letterhead.api';
 import { departmentApi } from '../services/department.api';
 import { useAuth } from '../contexts/AuthContext';
@@ -32,7 +32,6 @@ export function LetterheadDetailPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [letterhead, setLetterhead] = useState<Letterhead | null>(null);
-  const [archiveInfo, setArchiveInfo] = useState<ArchiveInfo | null>(null);
   const [versions, setVersions] = useState<LetterheadVersion[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,9 +39,6 @@ export function LetterheadDetailPage() {
   const [showVersions, setShowVersions] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [showArchiveModal, setShowArchiveModal] = useState(false);
-  const [retentionYears, setRetentionYears] = useState(7);
-  const [archiving, setArchiving] = useState(false);
   const [editForm, setEditForm] = useState<UpdateLetterheadPayload>({
     departmentId: 0,
     letterDate: '',
@@ -59,13 +55,7 @@ export function LetterheadDetailPage() {
   const canEdit =
     !!user &&
     !!letterhead &&
-    !letterhead.is_archived &&
-    (user.role === 'admin' ||
-      user.role === 'compliance' ||
-      user.role === 'ceo_office' ||
-      user.departmentId === letterhead.department_id);
-
-  const canArchive = !!user && (user.role === 'admin' || user.role === 'compliance' || user.role === 'ceo_office');
+    Number(user.userId) === Number(letterhead.created_by);
 
   async function loadData() {
     if (!letterId) return;
@@ -73,15 +63,13 @@ export function LetterheadDetailPage() {
     setLoading(true);
     setError('');
     try {
-      const [lh, archive, history, deptList] = await Promise.all([
+      const [lh, history, deptList] = await Promise.all([
         letterheadApi.getById(letterId),
-        letterheadApi.getArchiveInfo(letterId),
         letterheadApi.getVersions(letterId),
         departmentApi.getAll(),
       ]);
 
       setLetterhead(lh);
-      setArchiveInfo(archive);
       setVersions(history);
       setDepartments(deptList);
       setEditForm({
@@ -177,12 +165,8 @@ export function LetterheadDetailPage() {
       addToast('Letter updated successfully', 'success');
 
       try {
-        const [history, archive] = await Promise.all([
-          letterheadApi.getVersions(letterhead.id),
-          letterheadApi.getArchiveInfo(letterhead.id),
-        ]);
+        const history = await letterheadApi.getVersions(letterhead.id);
         setVersions(history);
-        setArchiveInfo(archive);
       } catch {
         addToast('Letter was updated, but history refresh needs a page reload', 'info');
       }
@@ -190,40 +174,6 @@ export function LetterheadDetailPage() {
       addToast(err.message || 'Failed to update letter', 'error');
     } finally {
       setIsSaving(false);
-    }
-  };
-
-  const handleArchive = async () => {
-    if (!letterhead) return;
-    setArchiving(true);
-    try {
-      const result = await letterheadApi.archive(letterhead.id, {
-        retentionYears,
-      });
-      setLetterhead(result.letterhead);
-      setArchiveInfo(result.archiveInfo);
-      setShowArchiveModal(false);
-      await loadData();
-      addToast('Letter archived successfully', 'success');
-    } catch (err: any) {
-      addToast(err.message || 'Failed to archive letter', 'error');
-    } finally {
-      setArchiving(false);
-    }
-  };
-
-  const handleUnarchive = async () => {
-    if (!letterhead) return;
-    if (!confirm('Are you sure you want to unarchive this letter?')) return;
-
-    try {
-      const updated = await letterheadApi.unarchive(letterhead.id);
-      setLetterhead(updated);
-      setArchiveInfo(null);
-      await loadData();
-      addToast('Letter unarchived successfully', 'success');
-    } catch (err: any) {
-      addToast(err.message || 'Failed to unarchive letter', 'error');
     }
   };
 
@@ -423,7 +373,7 @@ export function LetterheadDetailPage() {
                   </button>
                   {editForm.file && (
                     <div className="mt-2 flex items-center justify-between gap-3">
-                      <p className="text-xs text-amber-600">Current PDF will be archived before replacement</p>
+                      <p className="text-xs text-amber-600">Current PDF will be replaced</p>
                       <button
                         onClick={() => setEditForm(current => ({ ...current, file: null }))}
                         className="text-xs text-red-500 hover:text-red-600"
@@ -473,39 +423,6 @@ export function LetterheadDetailPage() {
         </div>
       )}
 
-      {/* Archive Modal */}
-      {showArchiveModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md">
-            <div className="p-6 border-b border-gray-100">
-              <h3 className="text-xl font-bold text-deyaar-dark">Archive Letter</h3>
-              <p className="text-sm text-gray-500 mt-1">{letterhead.reference_number}</p>
-            </div>
-            <div className="p-6 space-y-4">
-              <div className="bg-amber-50 border border-amber-100 rounded-xl p-4">
-                <p className="text-sm text-amber-800">Archiving will keep the record but prevent active editing.</p>
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Retention Period</label>
-                <select value={retentionYears} onChange={e => setRetentionYears(parseInt(e.target.value))} className="select-field w-full">
-                  <option value={3}>3 Years</option>
-                  <option value={5}>5 Years</option>
-                  <option value={7}>7 Years</option>
-                  <option value={10}>10 Years</option>
-                  <option value={15}>15 Years</option>
-                </select>
-              </div>
-            </div>
-            <div className="p-6 border-t border-gray-100 flex gap-3">
-              <button onClick={() => setShowArchiveModal(false)} className="flex-1 btn-secondary">Cancel</button>
-              <button onClick={handleArchive} disabled={archiving} className="flex-1 btn-primary bg-amber-600 hover:bg-amber-700">
-                {archiving ? 'Archiving...' : 'Archive Letter'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Page Header */}
       <div className="flex items-center justify-between gap-4 mb-4 flex-shrink-0">
         <div className="flex items-center gap-4">
@@ -528,17 +445,6 @@ export function LetterheadDetailPage() {
               </svg>
               Edit
             </button>
-          )}
-          {canArchive && (
-            letterhead.is_archived ? (
-              <button onClick={handleUnarchive} className="btn-secondary flex items-center gap-2 text-amber-600 border-amber-200 hover:bg-amber-50">
-                Unarchive
-              </button>
-            ) : (
-              <button onClick={() => setShowArchiveModal(true)} className="btn-secondary flex items-center gap-2">
-                Archive
-              </button>
-            )
           )}
           <button onClick={handleDownload} className="btn-primary flex items-center gap-2">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

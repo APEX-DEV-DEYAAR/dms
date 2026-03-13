@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { AuthPayload } from '../types';
 import { authApi } from '../services/auth.api';
+import { clearAuthStorage, persistAuthSession } from '../services/client';
 
 interface AuthContextType {
   user: AuthPayload | null;
@@ -24,8 +25,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       authApi.me()
         .then(setUser)
         .catch(() => {
-          localStorage.removeItem('token');
+          clearAuthStorage();
           setToken(null);
+          setUser(null);
         })
         .finally(() => setIsLoading(false));
     } else {
@@ -35,13 +37,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (username: string, password: string) => {
     const result = await authApi.login(username, password);
-    localStorage.setItem('token', result.token);
+    persistAuthSession(result.token, result.refreshToken);
     setToken(result.token);
     setUser(result.user);
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    clearAuthStorage();
     setToken(null);
     setUser(null);
   };

@@ -11,10 +11,6 @@ export class LetterheadController {
     try {
       const { departmentId, letterDate, approvalAuthority, description, notes } = req.body;
 
-      if (!departmentId || !letterDate || !approvalAuthority || !description) {
-        throw new ValidationError('departmentId, letterDate, approvalAuthority, and description are required');
-      }
-
       if (!req.file) {
         throw new ValidationError('PDF file is required');
       }
@@ -22,7 +18,7 @@ export class LetterheadController {
       assertPdfSignature(req.file);
 
       const letterhead = await this.letterheadService.create(
-        parseInt(departmentId),
+        typeof departmentId === 'number' ? departmentId : parseInt(departmentId),
         letterDate,
         approvalAuthority,
         description || null,
@@ -56,6 +52,7 @@ export class LetterheadController {
         endDate: req.query.endDate as string,
         approvalAuthority: req.query.approvalAuthority as string,
         search: req.query.search as string,
+        isArchived: req.query.isArchived === 'true' ? true : req.query.isArchived === 'false' ? false : undefined,
         page: req.query.page ? parseInt(req.query.page as string) : 1,
         limit: req.query.limit ? parseInt(req.query.limit as string) : 20,
       };
@@ -107,7 +104,6 @@ export class LetterheadController {
         { header: 'Registered At', key: 'created_at', width: 20 },
       ];
 
-      // Style header row
       sheet.getRow(1).eachCell(cell => {
         cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
         cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE67E22' } };
@@ -155,16 +151,12 @@ export class LetterheadController {
       const { id } = req.params;
       const { departmentId, letterDate, approvalAuthority, description, notes, justification } = req.body;
 
-      if (!departmentId || !letterDate || !approvalAuthority || !description || !justification) {
-        throw new ValidationError('departmentId, letterDate, approvalAuthority, description, and justification are required');
-      }
-
       assertPdfSignature(req.file);
 
       const letterhead = await this.letterheadService.update(
         parseInt(id),
         {
-          departmentId: parseInt(departmentId),
+          departmentId: typeof departmentId === 'number' ? departmentId : parseInt(departmentId),
           letterDate,
           approvalAuthority,
           description,
@@ -188,50 +180,6 @@ export class LetterheadController {
         req.user!
       );
       res.json(versions);
-    } catch (err) {
-      next(err);
-    }
-  };
-
-  archive = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { id } = req.params;
-      const { archiveReference, retentionYears = 7 } = req.body;
-      
-      const result = await this.letterheadService.archive(
-        parseInt(id),
-        archiveReference,
-        parseInt(retentionYears),
-        req.user!
-      );
-      res.json(result);
-    } catch (err) {
-      next(err);
-    }
-  };
-
-  unarchive = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { id } = req.params;
-      
-      const result = await this.letterheadService.unarchive(
-        parseInt(id),
-        req.user!
-      );
-      res.json(result);
-    } catch (err) {
-      next(err);
-    }
-  };
-
-  getArchiveInfo = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { id } = req.params;
-      const archiveInfo = await this.letterheadService.getArchiveInfo(
-        parseInt(id),
-        req.user!
-      );
-      res.json(archiveInfo);
     } catch (err) {
       next(err);
     }

@@ -112,6 +112,11 @@ export interface AuthPayload {
   departmentId: number | null;
 }
 
+export interface RefreshTokenPayload {
+  userId: number;
+  type: 'refresh';
+}
+
 export interface PaginatedResult<T> {
   data: T[];
   total: number;

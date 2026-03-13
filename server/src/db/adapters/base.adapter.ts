@@ -1,4 +1,5 @@
 export abstract class BaseDBAdapter {
+  abstract get dialect(): 'postgres' | 'oracle';
   abstract query<T = any>(sql: string, params?: any[]): Promise<T[]>;
   abstract queryOne<T = any>(sql: string, params?: any[]): Promise<T | null>;
   abstract execute(sql: string, params?: any[]): Promise<{ rowCount: number }>;

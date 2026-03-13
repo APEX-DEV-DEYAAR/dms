@@ -28,7 +28,14 @@
       "Bash(npm audit:*)",
       "Bash(npm ls:*)",
       "Bash(npm view:*)",
-      "Bash(npm pack:*)"
+      "Bash(npm pack:*)",
+      "Bash(ollama list:*)",
+      "Bash(where ollama:*)",
+      "Bash(\"C:\\\\Users\\\\ahmeds\\\\AppData\\\\Local\\\\Programs\\\\Ollama\\\\ollama.exe\" pull:*)",
+      "Bash(\"C:\\\\Users\\\\ahmeds\\\\AppData\\\\Local\\\\Programs\\\\Ollama\\\\ollama.exe\" list:*)",
+      "Bash(ls -la \"C:\\\\Users\\\\ahmeds\\\\researchwork\\\\testproject\\\\dms\\\\02 LOGO AGENT PACK\\\\DEYAAR FONTS\\\\03 HELVATICA NEUE WORLD\\\\\" 2>/dev/null && echo \"---\" && ls -la \"C:\\\\Users\\\\ahmeds\\\\researchwork\\\\testproject\\\\dms\\\\02 LOGO AGENT PACK\\\\DEYAAR FONTS\\\\ARABIC FONT\\\\HELVATICA NEUE WORLD\\\\\" 2>/dev/null)",
+      "Bash(ls /c/Users/ahmeds/researchwork/testproject/dms/*.env* 2>/dev/null; ls /c/Users/ahmeds/researchwork/testproject/dms/.env* 2>/dev/null; ls /c/Users/ahmeds/researchwork/testproject/dms/.env.example 2>/dev/null)",
+      "Bash(cd \"C:/Users/ahmeds/researchwork/testproject/dms/database/migrations\" && for f in *.sql; do cp \"$f\" \"postgres/$f\"; done && ls postgres/)"
     ]
   }
 }
