@@ -9,7 +9,7 @@ export class LetterheadController {
 
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { departmentId, letterDate, approvalAuthority, description, notes } = req.body;
+      const { departmentId, letterDate, approvalAuthority, description, notes, iomNumber } = req.body;
 
       if (!req.file) {
         throw new ValidationError('PDF file is required');
@@ -23,6 +23,7 @@ export class LetterheadController {
         approvalAuthority,
         description || null,
         notes || null,
+        iomNumber || null,
         req.file,
         req.user!
       );
@@ -97,6 +98,7 @@ export class LetterheadController {
         { header: 'Dept Code', key: 'department_code', width: 12 },
         { header: 'Letter Date', key: 'letter_date', width: 15 },
         { header: 'Approval Authority', key: 'approval_authority', width: 22 },
+        { header: 'IOM Number', key: 'iom_number', width: 18 },
         { header: 'Description', key: 'description', width: 35 },
         { header: 'Notes', key: 'notes', width: 35 },
         { header: 'File Name', key: 'file_name', width: 25 },
@@ -117,6 +119,7 @@ export class LetterheadController {
           department_code: row.department_code,
           letter_date: new Date(row.letter_date).toLocaleDateString('en-US'),
           approval_authority: row.approval_authority,
+          iom_number: row.iom_number || '',
           description: row.description || '',
           notes: row.notes || '',
           file_name: row.file_name,
@@ -149,7 +152,7 @@ export class LetterheadController {
   update = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
-      const { departmentId, letterDate, approvalAuthority, description, notes, justification } = req.body;
+      const { departmentId, letterDate, approvalAuthority, description, notes, iomNumber, justification } = req.body;
 
       assertPdfSignature(req.file);
 
@@ -161,6 +164,7 @@ export class LetterheadController {
           approvalAuthority,
           description,
           notes: notes || null,
+          iomNumber: iomNumber || null,
           justification,
         },
         req.file,

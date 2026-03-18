@@ -46,6 +46,7 @@ export class LetterheadService {
     approvalAuthority: string,
     description: string | null,
     notes: string | null,
+    iomNumber: string | null,
     file: UploadedPdf,
     user: AuthPayload
   ): Promise<LetterheadWithDetails> {
@@ -89,6 +90,7 @@ export class LetterheadService {
           approval_authority: cleanApprovalAuthority,
           description: cleanDescription,
           notes: this.normalizeOptionalText(notes),
+          iom_number: this.normalizeOptionalText(iomNumber),
           file_name: file.originalname,
           file_path: filePath,
           file_size_bytes: file.size,
@@ -155,6 +157,7 @@ export class LetterheadService {
     if (!department) throw new NotFoundError('Department not found');
 
     const nextNotes = this.normalizeOptionalText(input.notes);
+    const nextIomNumber = this.normalizeOptionalText(input.iomNumber);
     const changedFields: string[] = [];
 
     if (existing.department_id !== input.departmentId) changedFields.push('department');
@@ -162,6 +165,7 @@ export class LetterheadService {
     if (existing.approval_authority !== approvalAuthority) changedFields.push('approval authority');
     if ((existing.description || '') !== description) changedFields.push('description');
     if ((existing.notes || null) !== nextNotes) changedFields.push('notes');
+    if ((existing.iom_number || null) !== nextIomNumber) changedFields.push('IOM number');
     if (file) changedFields.push('attachment');
 
     if (changedFields.length === 0) {
@@ -202,6 +206,7 @@ export class LetterheadService {
           approval_authority: approvalAuthority,
           description,
           notes: nextNotes,
+          iom_number: nextIomNumber,
           file_name: fileName,
           file_path: filePath,
           file_size_bytes: fileSizeBytes,

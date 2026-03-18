@@ -37,6 +37,7 @@ export const letterheadApi = {
     formData.append('approvalAuthority', data.approvalAuthority);
     formData.append('description', data.description);
     formData.append('notes', data.notes || '');
+    formData.append('iomNumber', data.iomNumber || '');
     formData.append('justification', data.justification);
     if (data.file) {
       formData.append('file', data.file);

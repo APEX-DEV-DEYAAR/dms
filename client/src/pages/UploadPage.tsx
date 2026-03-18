@@ -17,6 +17,7 @@ export function UploadPage() {
   const [letterDate, setLetterDate] = useState('');
   const [approvalAuthority, setApprovalAuthority] = useState('');
   const [description, setDescription] = useState('');
+  const [iomNumber, setIomNumber] = useState('');
   const [notes, setNotes] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [nextRef, setNextRef] = useState('');
@@ -85,6 +86,7 @@ export function UploadPage() {
       formData.append('letterDate', letterDate);
       formData.append('approvalAuthority', approvalAuthority);
       formData.append('description', description);
+      formData.append('iomNumber', iomNumber || '');
       formData.append('notes', notes || '');
       formData.append('file', file);
 
@@ -181,7 +183,22 @@ export function UploadPage() {
             </select>
           </div>
 
-          {/* Row 3: Description (Mandatory) */}
+          {/* Row 3: IOM Number */}
+          <div className="card p-3">
+            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+              IOM Number <span className="text-gray-300 font-normal">(Optional)</span>
+            </label>
+            <input
+              type="text"
+              value={iomNumber}
+              onChange={e => setIomNumber(e.target.value)}
+              placeholder="e.g. IOM-2026-001"
+              className="input-field py-2 text-sm"
+              maxLength={50}
+            />
+          </div>
+
+          {/* Row 4: Description (Mandatory) */}
           <div className="card p-3 flex-1 flex flex-col">
             <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">
               Description <span className="text-deyaar-orange">*</span>

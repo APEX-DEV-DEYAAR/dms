@@ -35,6 +35,7 @@ export interface Letterhead {
   approval_authority: string;
   description: string;
   notes: string | null;
+  iom_number: string | null;
   file_name: string;
   file_path: string;
   file_size_bytes: number | null;
@@ -65,6 +66,7 @@ export interface UpdateLetterheadPayload {
   approvalAuthority: string;
   description: string;
   notes?: string;
+  iomNumber?: string;
   justification: string;
   file?: File | null;
 }
@@ -117,6 +119,7 @@ export interface LetterheadVersion {
   approval_authority: string | null;
   description: string;
   notes: string | null;
+  iom_number: string | null;
   file_name: string | null;
   file_path: string | null;
   file_size_bytes: number | null;

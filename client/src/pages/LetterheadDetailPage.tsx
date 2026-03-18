@@ -45,6 +45,7 @@ export function LetterheadDetailPage() {
     approvalAuthority: '',
     description: '',
     notes: '',
+    iomNumber: '',
     justification: '',
     file: null,
   });
@@ -78,6 +79,7 @@ export function LetterheadDetailPage() {
         approvalAuthority: lh.approval_authority,
         description: lh.description || '',
         notes: lh.notes || '',
+        iomNumber: lh.iom_number || '',
         justification: '',
         file: null,
       });
@@ -158,6 +160,7 @@ export function LetterheadDetailPage() {
         ...editForm,
         description: editForm.description.trim(),
         notes: editForm.notes?.trim() || '',
+        iomNumber: editForm.iomNumber?.trim() || '',
         justification: editForm.justification.trim(),
       });
       setLetterhead(updated);
@@ -293,6 +296,20 @@ export function LetterheadDetailPage() {
                     {approvalOptions.map(o => <option key={o} value={o}>{o}</option>)}
                   </select>
                     {formErrors.approvalAuthority && <p className="text-xs text-red-500 mt-1">{formErrors.approvalAuthority}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                      IOM Number <span className="text-gray-400 font-normal normal-case">(Optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={editForm.iomNumber || ''}
+                      onChange={e => setEditForm(current => ({ ...current, iomNumber: e.target.value }))}
+                      placeholder="e.g. IOM-2026-001"
+                      className="input-field w-full py-2.5 text-sm"
+                      maxLength={50}
+                    />
                   </div>
 
                   <div>
@@ -475,6 +492,10 @@ export function LetterheadDetailPage() {
           <div className="card p-4">
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Approved By</p>
             <p className="text-sm font-bold text-deyaar-dark mt-2">{letterhead.approval_authority}</p>
+          </div>
+          <div className="card p-4">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">IOM Number</p>
+            <p className="text-sm font-bold text-deyaar-dark mt-2">{letterhead.iom_number || '-'}</p>
           </div>
           <div className="card p-4">
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Registered By</p>

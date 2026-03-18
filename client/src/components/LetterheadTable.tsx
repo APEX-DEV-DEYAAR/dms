@@ -47,6 +47,7 @@ export function LetterheadTable({ letterheads, showDepartment = false }: Props) 
             <th className="table-header">Reference</th>
             <th className="table-header">Snapshots</th>
             {showDepartment && <th className="table-header">Department</th>}
+            <th className="table-header">IOM Number</th>
             <th className="table-header">Description</th>
             <th className="table-header">Date</th>
             <th className="table-header">Approved By</th>
@@ -87,6 +88,13 @@ export function LetterheadTable({ letterheads, showDepartment = false }: Props) 
                   </span>
                 </td>
               )}
+
+              {/* IOM Number */}
+              <td className="table-cell">
+                <span className="text-sm text-gray-600 font-mono">
+                  {lh.iom_number || '-'}
+                </span>
+              </td>
 
               {/* Description */}
               <td className="table-cell">

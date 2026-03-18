@@ -36,6 +36,7 @@ export class LetterheadRepository {
       data.approval_authority,
       data.description,
       data.notes,
+      data.iom_number,
       data.file_name,
       data.file_path,
       data.file_size_bytes,
@@ -46,8 +47,8 @@ export class LetterheadRepository {
     if (this.supportsNativeReturning) {
       const result = await txDb.queryOne<Letterhead>(
         `INSERT INTO letterheads
-          (department_id, reference_number, letter_date, approval_authority, description, notes, file_name, file_path, file_size_bytes, mime_type, created_by)
-         VALUES (${this.sql.param(1)}, ${this.sql.param(2)}, ${this.sql.param(3)}, ${this.sql.param(4)}, ${this.sql.param(5)}, ${this.sql.param(6)}, ${this.sql.param(7)}, ${this.sql.param(8)}, ${this.sql.param(9)}, ${this.sql.param(10)}, ${this.sql.param(11)})
+          (department_id, reference_number, letter_date, approval_authority, description, notes, iom_number, file_name, file_path, file_size_bytes, mime_type, created_by)
+         VALUES (${this.sql.param(1)}, ${this.sql.param(2)}, ${this.sql.param(3)}, ${this.sql.param(4)}, ${this.sql.param(5)}, ${this.sql.param(6)}, ${this.sql.param(7)}, ${this.sql.param(8)}, ${this.sql.param(9)}, ${this.sql.param(10)}, ${this.sql.param(11)}, ${this.sql.param(12)})
          ${this.sql.returning('*')}`,
         params
       );
@@ -56,8 +57,8 @@ export class LetterheadRepository {
 
     await txDb.execute(
       `INSERT INTO letterheads
-        (department_id, reference_number, letter_date, approval_authority, description, notes, file_name, file_path, file_size_bytes, mime_type, created_by)
-       VALUES (${this.sql.param(1)}, ${this.sql.param(2)}, ${this.sql.param(3)}, ${this.sql.param(4)}, ${this.sql.param(5)}, ${this.sql.param(6)}, ${this.sql.param(7)}, ${this.sql.param(8)}, ${this.sql.param(9)}, ${this.sql.param(10)}, ${this.sql.param(11)})`,
+        (department_id, reference_number, letter_date, approval_authority, description, notes, iom_number, file_name, file_path, file_size_bytes, mime_type, created_by)
+       VALUES (${this.sql.param(1)}, ${this.sql.param(2)}, ${this.sql.param(3)}, ${this.sql.param(4)}, ${this.sql.param(5)}, ${this.sql.param(6)}, ${this.sql.param(7)}, ${this.sql.param(8)}, ${this.sql.param(9)}, ${this.sql.param(10)}, ${this.sql.param(11)}, ${this.sql.param(12)})`,
       params
     );
 
@@ -90,9 +91,9 @@ export class LetterheadRepository {
     await db.execute(
       `INSERT INTO letterhead_versions
         (letterhead_id, version_number, department_id, reference_number, letter_date, approval_authority,
-         description, notes, file_name, file_path, file_size_bytes, mime_type, created_by,
+         description, notes, iom_number, file_name, file_path, file_size_bytes, mime_type, created_by,
          original_created_at, original_updated_at, modified_by, change_summary, archive_reason, archived_file_path)
-       VALUES (${this.sql.param(1)}, ${this.sql.param(2)}, ${this.sql.param(3)}, ${this.sql.param(4)}, ${this.sql.param(5)}, ${this.sql.param(6)}, ${this.sql.param(7)}, ${this.sql.param(8)}, ${this.sql.param(9)}, ${this.sql.param(10)}, ${this.sql.param(11)}, ${this.sql.param(12)}, ${this.sql.param(13)}, ${this.sql.param(14)}, ${this.sql.param(15)}, ${this.sql.param(16)}, ${this.sql.param(17)}, ${this.sql.param(18)}, ${this.sql.param(19)})`,
+       VALUES (${this.sql.param(1)}, ${this.sql.param(2)}, ${this.sql.param(3)}, ${this.sql.param(4)}, ${this.sql.param(5)}, ${this.sql.param(6)}, ${this.sql.param(7)}, ${this.sql.param(8)}, ${this.sql.param(9)}, ${this.sql.param(10)}, ${this.sql.param(11)}, ${this.sql.param(12)}, ${this.sql.param(13)}, ${this.sql.param(14)}, ${this.sql.param(15)}, ${this.sql.param(16)}, ${this.sql.param(17)}, ${this.sql.param(18)}, ${this.sql.param(19)}, ${this.sql.param(20)})`,
       [
         id,
         current.current_version,
@@ -102,6 +103,7 @@ export class LetterheadRepository {
         current.approval_authority,
         current.description || '',
         current.notes,
+        current.iom_number,
         current.file_name,
         current.file_path,
         current.file_size_bytes,
@@ -140,6 +142,10 @@ export class LetterheadRepository {
     if (data.notes !== undefined) {
       sets.push(`notes = ${this.sql.param(paramIndex++)}`);
       params.push(data.notes);
+    }
+    if (data.iom_number !== undefined) {
+      sets.push(`iom_number = ${this.sql.param(paramIndex++)}`);
+      params.push(data.iom_number);
     }
     if (data.file_name !== undefined) {
       sets.push(`file_name = ${this.sql.param(paramIndex++)}`);
@@ -219,6 +225,7 @@ export class LetterheadRepository {
         v.approval_authority,
         v.description,
         v.notes,
+        v.iom_number,
         v.file_name,
         v.file_path,
         v.file_size_bytes,
@@ -337,9 +344,9 @@ export class LetterheadRepository {
     }
 
     if (filter.search) {
-      conditions.push(`(${this.sql.ilike('l.reference_number', paramIndex)} OR ${this.sql.ilike('l.description', paramIndex + 1)} OR ${this.sql.ilike('l.notes', paramIndex + 2)})`);
-      params.push(`%${filter.search}%`, `%${filter.search}%`, `%${filter.search}%`);
-      paramIndex += 3;
+      conditions.push(`(${this.sql.ilike('l.reference_number', paramIndex)} OR ${this.sql.ilike('l.description', paramIndex + 1)} OR ${this.sql.ilike('l.notes', paramIndex + 2)} OR ${this.sql.ilike('l.iom_number', paramIndex + 3)})`);
+      params.push(`%${filter.search}%`, `%${filter.search}%`, `%${filter.search}%`, `%${filter.search}%`);
+      paramIndex += 4;
     }
 
     if (filter.isArchived !== undefined) {
@@ -396,9 +403,9 @@ export class LetterheadRepository {
       params.push(`%${filter.approvalAuthority}%`);
     }
     if (filter.search) {
-      conditions.push(`(${this.sql.ilike('l.reference_number', paramIndex)} OR ${this.sql.ilike('l.description', paramIndex + 1)} OR ${this.sql.ilike('l.notes', paramIndex + 2)})`);
-      params.push(`%${filter.search}%`, `%${filter.search}%`, `%${filter.search}%`);
-      paramIndex += 3;
+      conditions.push(`(${this.sql.ilike('l.reference_number', paramIndex)} OR ${this.sql.ilike('l.description', paramIndex + 1)} OR ${this.sql.ilike('l.notes', paramIndex + 2)} OR ${this.sql.ilike('l.iom_number', paramIndex + 3)})`);
+      params.push(`%${filter.search}%`, `%${filter.search}%`, `%${filter.search}%`, `%${filter.search}%`);
+      paramIndex += 4;
     }
 
     if (filter.isArchived !== undefined) {

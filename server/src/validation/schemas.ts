@@ -15,6 +15,7 @@ export const createLetterheadSchema = z.object({
     approvalAuthority: z.string().min(1, 'approvalAuthority is required').max(200),
     description: z.string().min(1, 'description is required').max(2000),
     notes: z.string().max(2000).optional().nullable(),
+    iomNumber: z.string().max(50).optional().nullable(),
   }),
 });
 
@@ -25,6 +26,7 @@ export const updateLetterheadSchema = z.object({
     approvalAuthority: z.string().min(1, 'approvalAuthority is required').max(200),
     description: z.string().min(1, 'description is required').max(2000),
     notes: z.string().max(2000).optional().nullable(),
+    iomNumber: z.string().max(50).optional().nullable(),
     justification: z.string().min(1, 'justification is required').max(2000),
   }),
   params: z.object({
